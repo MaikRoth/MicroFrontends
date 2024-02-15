@@ -1,0 +1,65 @@
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+    gap: 0px;
+    padding: 10px;
+}
+
+.robot-image {
+    width: 20px;
+    height: 20px;
+    margin: 2px;
+}
+
+.robots {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.cell {
+    position: relative;
+    height: 50px;
+    border: black 1px solid;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f0f0;
+    font-size: x-small;
+    color: #333;
+}
+
+.counts {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+    font-size: larger;
+}
+
+.resource-amount {
+    position: absolute;
+    top: 75%;
+    left: 25%;
+    padding: 2px;
+    font-size: smaller;
+    color: #333;
+}
+
+.resource-type {
+    position: absolute;
+    top: 56%;
+    left: 17%;
+    padding: 2px;
+    font-size: xx-small;
+    color: #333;
+}
+
+.cell.empty {
+    background-color: #333;
+}
+
+.cell.planet {
+    background: #ffffff;
+    color: rgb(0, 0, 0);
+}

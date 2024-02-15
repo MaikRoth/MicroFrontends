@@ -1,0 +1,31 @@
+{
+  "name": "frontend-game",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack serve --config config/webpack.dev.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.6.7",
+    "kafkajs": "^2.2.4",
+    "vue": "^3.4.15"
+  },
+  "devDependencies": {
+    "@babel/plugin-transform-runtime": "^7.23.9",
+    "assert": "^2.1.0",
+    "buffer": "^6.0.3",
+    "css-loader": "^6.10.0",
+    "html-webpack-plugin": "^5.6.0",
+    "style-loader": "^3.3.4",
+    "util": "^0.12.5",
+    "vue-loader": "^17.4.2",
+    "vue-template-compiler": "^2.7.16",
+    "webpack": "^5.90.1",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1"
+  }
+}
