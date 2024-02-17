@@ -7,7 +7,6 @@ const kafka = new Kafka({
 const consumer = kafka.consumer({ groupId: 'mapConsumer' });
 const messages = {};
 const map = {
-  grid: [],
   planetsMap: {},
   robotsMap: {}
 };
@@ -27,6 +26,11 @@ const init = async (updateCallback) => {
   await consumer.run({
     eachMessage: async ({ topic, partition, message }) => {
       const parsedMessage = JSON.parse(message.value.toString());
+      const headers = message.headers
+      for (const [key, value] of Object.entries(headers)) {
+        console.log(`Header key: ${key}, value: ${value.toString()}`);
+      }
+  
       messages[topic].push(parsedMessage);
       if (topic === 'status' && parsedMessage.status === 'ended') {
         topics.forEach(topic => messages[topic] = []);
@@ -34,10 +38,11 @@ const init = async (updateCallback) => {
         map.planetsMap = {};
       } else if (topic === 'gameworld' && parsedMessage.planets) {
         createMapFromMessage(parsedMessage);
-        updateFrontendCallback(map.grid);
+        updateFrontendCallback(map.planetsMap);
       } else if (topic === 'planet') {
         updatePlanetResource(parsedMessage);
       }else  if (topic === 'robot') {
+        console.log(topic, parsedMessage);
         if (parsedMessage.robot && parsedMessage.robot.player) {
           addRobotToPlanet(parsedMessage);
         }
@@ -72,39 +77,47 @@ function createMapFromMessage(message) {
     map.planetsMap[planet.id] = { ...planet, robots: [] };
   });
 
-  const mapSize = Math.max(maxX, maxY) + 1;
-  map.grid = Array.from({ length: mapSize }, () =>
-    Array.from({ length: mapSize }, () => null)
-  );
+  // const mapSize = Math.max(maxX, maxY) + 1;
+  // map.grid = Array.from({ length: mapSize }, () =>
+  //   Array.from({ length: mapSize }, () => null)
+  // );
 
-  Object.values(map.planetsMap).forEach(planet => {
-    map.grid[planet.y][planet.x] = planet;
-  });
+  // Object.values(map.planetsMap).forEach(planet => {
+  //   map.grid[planet.y][planet.x] = planet;
+  // });
 
 }
 function updatePlanetResource({ planet: planetId, minedAmount, resource }) {
-  let planet = map.planetsMap[planetId];
   if (resource) {
     const currentAmount = resource.currentAmount;
-    if (planet) {
-      map.grid[planet.y][planet.x].resource.currentAmount = currentAmount;
-      updateFrontendCallback(map.grid);
+    if (map.planetsMap[planetId]) {
+      map.planetsMap[planetId].resource.currentAmount = currentAmount;
+      updateFrontendCallback(map.planetsMap);
     }
   }
 }
 
 function addRobotToPlanet(robotInfo) {
-  const planet = map.planetsMap[robotInfo.robot.planet.planetId];
+  const planetId = robotInfo.robot.planet.planetId;
+  const planet = map.planetsMap[planetId];
   if (planet) {
-    const robot = { ...robotInfo, planetId: robotInfo.robot.planet.planetId }; 
-    planet.robots.push(robot);
-    updateFrontendCallback(map.grid); 
+    const robotIndex = planet.robots.findIndex(r => r.id === robotInfo.robot.id);
+    const robot = robotInfo.robot;
+    
+    if (robotIndex !== -1) {
+      planet.robots[robotIndex] = robot;
+    } else {
+      planet.robots.push(robot);
+    }
+  
+    updateFrontendCallback(map.planetsMap); 
   }
 }
 
 
 function moveRobot({ robotId, fromPlanetId, toPlanetId, remainingEnergy }) {
   const fromPlanet = map.planetsMap[fromPlanetId];
+  const robot = fromPlanet.robots.find(r => r.id === robotId);
   if (fromPlanet) {
     const robotIndex = fromPlanet.robots.findIndex(r => r.id === robotId);
     if (robotIndex !== -1) fromPlanet.robots.splice(robotIndex, 1);
@@ -112,19 +125,17 @@ function moveRobot({ robotId, fromPlanetId, toPlanetId, remainingEnergy }) {
 
   const toPlanet = map.planetsMap[toPlanetId];
   if (toPlanet) {
-    const robot = { id: robotId, planetId: toPlanetId, energy: remainingEnergy };
     toPlanet.robots.push(robot);
-    updateFrontendCallback(map.grid); 
+    updateFrontendCallback(map.planetsMap); 
   }
 }
 
 function updateRobotInventory({ robotId, minedResource, minedAmount, resourceInventory }) {
   for (const planet of Object.values(map.planetsMap)) {
-    console.log(planet);
     const robot = planet.robots.find(r => r.id === robotId);
     if (robot) {
       robot.inventory.resources = resourceInventory;
-      updateFrontendCallback(map.grid); 
+      updateFrontendCallback(map.planetsMap); 
       break;
     }
   }
@@ -135,5 +146,6 @@ module.exports = {
   init,
   getMessages: (topic) => messages[topic] || [],
   getMap: () => map.grid || [],
+  getWholeMap: () => [map] || [],
   getPlanetById: (id) => map.planetsMap[id] || null
 };

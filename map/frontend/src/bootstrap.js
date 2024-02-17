@@ -1,24 +1,20 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App';
-let root = null;
+import { createApp } from 'vue';
+import App from './App.vue';
 
-const mount = (el) => {
-    if (root === null) {
-        root = ReactDOM.createRoot(el);
-    }    
-    root.render(
-        <React.StrictMode>
-            <App />
-        </React.StrictMode>
-    );
-}
+let appInstance = null;
+
+const mount = (selector) => {
+    if (appInstance === null) {
+        appInstance = createApp(App).mount(selector);
+    }
+};
+
 if (process.env.NODE_ENV === 'development') {
-    const devRoot = document.querySelector('#map-dev-root');
-    if (devRoot) {
+    const devRoot = document.querySelector('#map-dev-root');    
+    if (devRoot){
         mount(devRoot);
     }
+    
 }
-
 
 export { mount };

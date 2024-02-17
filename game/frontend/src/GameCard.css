@@ -1,0 +1,27 @@
+.game-card {
+    border: 2px solid #007bff;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 600px;
+    background-color: #f9f9f9;
+  }
+  
+  .game-card h2 {
+    color: #007bff;
+  }
+  
+  .game-card ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .game-card li {
+    margin-bottom: 10px;
+  }
+  
+  .loading {
+    text-align: center;
+    margin-top: 20px;
+  }
+  

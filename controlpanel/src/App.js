@@ -20,6 +20,7 @@ const App = () => {
         body: JSON.stringify({ maxRounds, maxPlayers }),
       });
       const data = await response.json();
+      console.log('game creation data:', data);
       setGameId(data.gameId);
      // alert('Game created successfully!');
     } catch (error) {
@@ -82,7 +83,7 @@ const App = () => {
       //alert('Game ended successfully!');
     } catch (error) {
       console.error('Error ending game:', error);
-      //alert('Failed to end game.');
+      alert('Failed to end game.');
     }
   };
 
@@ -96,7 +97,7 @@ const App = () => {
       }
     } catch (error) {
       console.error('Error fetching game ID:', error);
-     // alert('Failed to fetch game ID.');
+      alert('Failed to fetch game ID.');
     }
   };
 

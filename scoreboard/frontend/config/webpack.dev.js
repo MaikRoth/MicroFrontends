@@ -6,7 +6,7 @@ const packageJson = require('../package.json');
 const devConfig = {
     mode: 'development',
     devServer: {
-        port: 4003,
+        port: 4005,
         historyApiFallback: {
             index: 'index.html'
         }
@@ -16,10 +16,10 @@ const devConfig = {
             template: './public/index.html'
         }),
         new ModuleFederationPlugin({
-            name: 'map',
+            name: 'scoreboard',
             filename: 'remoteEntry.js',
             exposes: {
-                './MapApp': './src/bootstrap'
+                './ScoreboardApp': './src/bootstrap'
             },
             shared: packageJson.dependencies
         })

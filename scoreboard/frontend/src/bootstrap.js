@@ -14,7 +14,7 @@ const mount = (el) => {
     );
 }
 if (process.env.NODE_ENV === 'development') {
-    const devRoot = document.querySelector('#gamecard-dev-root');
+    const devRoot = document.querySelector('#scoreboard-dev-root');
     if (devRoot) {
         mount(devRoot);
     }

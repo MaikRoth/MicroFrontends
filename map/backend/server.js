@@ -8,6 +8,15 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
+
+app.get('/map', (req, res) => {
+  res.json(kafkaConsumer.getMap());
+});
+
+app.get('/wholemap', (req, res) => {
+  res.json(kafkaConsumer.getWholeMap());
+});
+
 const server = require('http').createServer(app);
 const wss = new WebSocket.Server({ server });
 
