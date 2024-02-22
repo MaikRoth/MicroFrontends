@@ -1,35 +1,57 @@
 import React, { useEffect, useState } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css'; 
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   const [scoreboardData, setScoreboardData] = useState({
-    scoreboardEntriesWithAchievements: [] 
+    scoreboardEntriesWithAchievements: [],
   });
 
+  const fetchAchievementsData = async () => {
+    try {
+      const response = await fetch('http://localhost:8089/scoreboard-with-achievements');
+      if (!response.ok) {
+        throw new Error(`HTTP Error ${response.status}`);
+      }
+      const data = await response.json();
+      setScoreboardData(data);
+    } catch (error) {
+      console.error('Error fetching achievements:', error);
+    }
+  };
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      const ws = new WebSocket('ws://localhost:4004');
-  
-      ws.onopen = () => {
-        console.log('WebSocket connected');
-      };
-  
-      ws.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        setScoreboardData(data);
-      };
-  
-      ws.onclose = () => {
-        console.log('WebSocket disconnected');
-      };
-  
-      return () => {
-        ws.close();
-      };
-    }, 30);
-  
-    return () => clearTimeout(timeoutId);
+    fetchAchievementsData();
+    const intervalId = setInterval(fetchAchievementsData, 7000);
+    
+    return () => {
+      clearInterval(intervalId);
+    };
   }, []);
+
+  useEffect(() => {
+    if (scoreboardData && scoreboardData.scoreboardEntriesWithAchievements.length > 0) {
+      const playingPlayers = extractPlayingPlayers(scoreboardData);
+      dispatchPlayingPlayersEvent(playingPlayers);
+    }
+  }, [scoreboardData]);
+
+
+  const extractPlayingPlayers = (data) => {
+    const playerIds = data ? data.scoreboardEntriesWithAchievements.map(entry => entry.player.id) : [];
+    const playerNames = data ? data.scoreboardEntriesWithAchievements.map(entry => entry.player.name) : [];
+    const playingPlayers = playerIds.map((id, index) => ({
+      playerId: id,
+      playerName: playerNames[index]
+    }));
+    return playingPlayers;
+  };
+
+  const dispatchPlayingPlayersEvent = (playingPlayers) => {
+    const event = new CustomEvent('playingPlayersUpdate', {
+      detail: { playingPlayers }
+    });
+    window.dispatchEvent(event);
+  };
+
 
   return (
     <div className="container mt-5">

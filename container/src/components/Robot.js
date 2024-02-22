@@ -1,8 +1,9 @@
-import { mount } from 'gamecard/GameCard';
+import { mount } from 'robot/RobotApp';
 import React, { useRef, useEffect } from 'react';
 
 export default () => {
     const ref = useRef(null);
+
     useEffect(() => {
         mount(ref.current);
     }, []);

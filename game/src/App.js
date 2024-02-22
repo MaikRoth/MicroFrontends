@@ -4,38 +4,32 @@ import './GameCard.css';
 const GameCard = () => {
   const [game, setGame] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-
+  const fetchData = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/games');
+      if (!response.ok) {
+        throw new Error(`HTTP Error ${response.status}`);
+      }
+      const data = await response.json();
+      setGame(data[0]); 
+    } catch (error) {
+      setError(error);
+      console.error('Error fetching game:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      const socket = new WebSocket('ws://localhost:4000');
+    fetchData(); 
 
-      socket.onopen = () => {
-        if (socket.readyState === WebSocket.OPEN) {
-          socket.send('REQUEST_GAME_DATA');
-        }
-      };
+    const intervalId = setInterval(() => {
+      fetchData(); 
+    }, 100); 
 
-      socket.onmessage = (event) => {
-        setIsLoading(false);
-        const data = JSON.parse(event.data);
-        if (Array.isArray(data) && data.length > 0) {
-          setGame(data[0]);
-        } else {
-          setGame(null);
-        }
-      };
-
-      socket.onerror = (error) => {
-        console.error('WebSocket error:', error);
-        setIsLoading(false);
-      };
-
-      return () => {
-        socket.close();
-      };
-    }, 30); 
-    return () => clearTimeout(timeoutId);
+    return () => clearInterval(intervalId);
   }, []);
   return (
     <div>

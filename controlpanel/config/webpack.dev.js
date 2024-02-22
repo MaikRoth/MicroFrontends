@@ -5,10 +5,13 @@ const commonConfig = require('./webpack.common');
 
 const devConfig = {
   mode: 'development',
+  output: {
+    publicPath: 'http://localhost:4011/',
+  },
   devServer: {
     port: 4011,
     historyApiFallback: {
-      index: 'index.html',
+      index: '/index.html',
     },
   },
   plugins: [

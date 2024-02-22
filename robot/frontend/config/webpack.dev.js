@@ -5,10 +5,13 @@ const { ModuleFederationPlugin } = require('webpack').container
 const packageJson = require('../package.json');
 const devConfig = {
     mode: 'development',
+    output: {
+        publicPath: 'http://localhost:4007/',
+    },
     devServer: {
-        port: 4005,
+        port: 4007,
         historyApiFallback: {
-            index: 'index.html'
+            index: '/index.html'
         }
     },
     plugins: [
@@ -16,10 +19,10 @@ const devConfig = {
             template: './public/index.html'
         }),
         new ModuleFederationPlugin({
-            name: 'scoreboard',
+            name: 'robot',
             filename: 'remoteEntry.js',
             exposes: {
-                './ScoreboardApp': './src/bootstrap'
+                './RobotApp': './src/bootstrap'
             },
             shared: packageJson.dependencies
         })

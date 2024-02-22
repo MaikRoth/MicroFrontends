@@ -16,7 +16,7 @@ const init = async (updateCallback) => {
   updateFrontendCallback = updateCallback; 
 
   await consumer.connect();
-  const topics = ['gameworld', 'planet', 'status', 'robot'];
+  const topics = ['gameworld', 'planet', 'status'];
 
   for (let topic of topics) {
     await consumer.subscribe({ topic, fromBeginning: false });
@@ -41,27 +41,6 @@ const init = async (updateCallback) => {
         updateFrontendCallback(map.planetsMap);
       } else if (topic === 'planet') {
         updatePlanetResource(parsedMessage);
-      }else  if (topic === 'robot') {
-        console.log(topic, parsedMessage);
-        if (parsedMessage.robot && parsedMessage.robot.player) {
-          addRobotToPlanet(parsedMessage);
-        }
-        else if (parsedMessage.fromPlanet && parsedMessage.toPlanet) {
-          moveRobot({
-            robotId: parsedMessage.robotId,
-            fromPlanetId: parsedMessage.fromPlanet.id,
-            toPlanetId: parsedMessage.toPlanet.id,
-            remainingEnergy: parsedMessage.remainingEnergy
-          });
-        }
-        else if (parsedMessage.minedResource && parsedMessage.resourceInventory) {
-          updateRobotInventory({
-            robotId: parsedMessage.robotId,
-            minedResource: parsedMessage.minedResource,
-            minedAmount: parsedMessage.minedAmount,
-            resourceInventory: parsedMessage.resourceInventory
-          });
-        }
       }
     },
   });

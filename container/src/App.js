@@ -1,29 +1,32 @@
-import React, { Suspense, lazy } from 'react';
+import React from 'react';
 import Header from './components/Header';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-
-const ControlPanel = lazy(() => import('./components/Controlpanel'));
-const GameCard = lazy(() => import('./components/GameCard'));
-const Map = lazy(() => import('./components/Map'));
-const Scoreboard = lazy(() => import('./components/Scoreboard'));
+import GameCard from './components/GameCard';
+import Controlpanel from './components/Controlpanel';
+import Scoreboard from './components/Scoreboard';
+import Map from './components/Map';
+import Robot from './components/Robot';
 
 export default () => {
     return (
         <BrowserRouter>
             <div>
                 <Header />
-                <Suspense fallback={<div>Loading...</div>}>
-                    <Routes>
-                        <Route path="/scoreboard" element={<Scoreboard />} />
-                        <Route path="/map" element={<Map />} />
-                        <Route path="/" element={
-                            <>
-                                <GameCard />
-                                <ControlPanel />
-                            </>
-                        } />
-                    </Routes>
-                </Suspense>
+                <Routes>
+                    <Route path="/map" element={
+                        <>
+                            <Scoreboard />
+                            <Map />
+                            <Robot />
+                        </>} />
+                    <Route path="/" element={
+                        <>
+                            <GameCard />
+                            <Controlpanel />
+
+                        </>
+                    } />
+                </Routes>
             </div>
         </BrowserRouter>
     );

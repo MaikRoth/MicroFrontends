@@ -14,7 +14,7 @@
           </div>
           <div v-if="cell && cell.robots.length > 0" class="robots">
             <span v-if="cell.robots.length > 4" key="robots-count">{{ cell.robots.length }}</span>
-            <img v-else v-for="robot in cell.robots" :key="`robot-${robot.id}`" :src="`https://robohash.org/${robot.id}.png`"
+            <img v-else v-for="robot in cell.robots" :key="`${robot.id}`" :src="`https://robohash.org/${robot.image}.png`"
               alt="robot" class="robot-image" />
           </div>
         </div>

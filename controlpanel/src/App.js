@@ -9,8 +9,6 @@ const App = () => {
   const [gameId, setGameId] = useState('');
 
   const handleCreateGame = async (maxRounds, maxPlayers) => {
-    console.log('maxRounds:', maxRounds);
-    console.log('maxPlayers:', maxPlayers);
     try {
       const response = await fetch('http://localhost:8080/games', {
         method: 'POST',
@@ -20,9 +18,7 @@ const App = () => {
         body: JSON.stringify({ maxRounds, maxPlayers }),
       });
       const data = await response.json();
-      console.log('game creation data:', data);
       setGameId(data.gameId);
-     // alert('Game created successfully!');
     } catch (error) {
       console.error('Error creating game:', error);
       alert('Failed to create game. ');
@@ -38,7 +34,6 @@ const App = () => {
         },
         body: JSON.stringify({ maxRounds: newMaxRounds }),
       });
-     // alert('Max Rounds updated successfully!');
     } catch (error) {
       console.error('Error updating max rounds:', error);
       alert('Failed to update max rounds.');
@@ -46,7 +41,6 @@ const App = () => {
   };
 
   const handlePatchDuration = async (newDuration) => {
-    console.log('newDuration:', newDuration);
     try {
       await fetch(`http://localhost:8080/games/${gameId}/duration`, {
         method: 'PATCH',
@@ -55,7 +49,6 @@ const App = () => {
         },
         body: JSON.stringify({ duration: newDuration }),
       });
-     // alert('Duration updated successfully!');
     } catch (error) {
       console.error('Error updating duration:', error);
       alert('Failed to update duration.');
@@ -67,20 +60,18 @@ const App = () => {
       await fetch(`http://localhost:8080/games/${gameId}/gameCommands/start`, {
         method: 'POST',
       });
-      //alert('Game started successfully!');
     } catch (error) {
       console.error('Error starting game:', error);
       alert('Failed to start game.');
     }
   };
-
+  
   const handleEndGame = async () => {
     try {
       await fetch(`http://localhost:8080/games/${gameId}/gameCommands/end`, {
         method: 'POST',
       });
       setGameId('');
-      //alert('Game ended successfully!');
     } catch (error) {
       console.error('Error ending game:', error);
       alert('Failed to end game.');
@@ -93,7 +84,6 @@ const App = () => {
       const data = await response.json();
       if (data) {
         setGameId(data[0].gameId);
-        //alert('Game ID fetched successfully! Game ID: ' + data[0].gameId);
       }
     } catch (error) {
       console.error('Error fetching game ID:', error);
