@@ -29,29 +29,21 @@ export default {
 
             ws.onerror = error => console.log('WebSocket Error:', error);
             window.addEventListener('robotMapUpdate', (event) => {
-                planets.value.forEach(planet => {
-                    planet.robots = [];
-                });
                 const robotMap = event.detail;
+                const planetMap = new Map(planets.value.map(planet => [planet.id, planet]));
                 robotMap.mapData.forEach(robot => {
-                    planets.value.forEach(planet => {
-                        if (robot.planet === planet.id) {
-                            if (!planet.robots.includes(robot.id)) {
-                                planet.robots.push(robot);
-                            }
+                    const planet = planetMap.get(robot.planet);
+                    if (planet) {
+                        const existingRobotIndex = planet.robots.findIndex(r => r.id === robot.id);
+                        if (existingRobotIndex === -1) {
+                            planet.robots.push(robot);
+                        } else {
+                            Object.assign(planet.robots[existingRobotIndex], robot);
                         }
-                    });
-                    
+                    }
                 });
-            });
-            watch(planets, (newPlanets) => {
-                localStorage.setItem('planetsData', JSON.stringify(newPlanets));
-            }, { deep: true });
 
-            const storedPlanets = localStorage.getItem('planetsData');
-            if (storedPlanets) {
-                planets.value = JSON.parse(storedPlanets);
-            }
+            });
 
             return () => {
                 ws.close();

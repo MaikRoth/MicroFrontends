@@ -13,24 +13,26 @@ const GameCard = () => {
         throw new Error(`HTTP Error ${response.status}`);
       }
       const data = await response.json();
-      setGame(data[0]); 
+      setGame(data[0]);
+      setIsLoading(false);
     } catch (error) {
-      setError(error);
-      console.error('Error fetching game:', error);
-    } finally {
+      setError(error.toString());
       setIsLoading(false);
     }
   };
-  
   useEffect(() => {
-    fetchData(); 
+    fetchData();
 
-    const intervalId = setInterval(() => {
-      fetchData(); 
-    }, 100); 
+    const handleUpdate = () => fetchData();
+    window.addEventListener('updateGameCard', handleUpdate);
 
-    return () => clearInterval(intervalId);
+    return () => window.removeEventListener('updateGameCard', handleUpdate);
   }, []);
+
+  if (isLoading) return <div className="loading">Loading game details...</div>;
+  if (error) return <div className="error">{error}</div>;
+  if (!game) return <div className="loading">No game details available.</div>;
+
   return (
     <div>
       {game ? (

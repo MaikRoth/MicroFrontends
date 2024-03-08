@@ -6,6 +6,7 @@ import Controlpanel from './components/Controlpanel';
 import Scoreboard from './components/Scoreboard';
 import Map from './components/Map';
 import Robot from './components/Robot';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default () => {
     return (
@@ -14,17 +15,36 @@ export default () => {
                 <Header />
                 <Routes>
                     <Route path="/map" element={
-                        <>
-                            <Scoreboard />
-                            <Map />
-                            <Robot />
-                        </>} />
+                        <div className="container mt-4">
+                            <div className="row">
+                                <div className="col-12">
+                                    <Scoreboard />
+                                </div>
+                            </div>
+                            <div className="row">
+                                <div className="col-12">
+                                    <Map />
+                                </div>
+                            </div>
+                            <div className="row">
+                                <div className="col-12">
+                                    <Robot />
+                                </div>
+                            </div>
+                        </div>} />
                     <Route path="/" element={
-                        <>
-                            <GameCard />
-                            <Controlpanel />
-
-                        </>
+                        <div className="container mt-4">
+                            <div className="row">
+                                <div className="col-12">
+                                    <GameCard />
+                                </div>
+                            </div>
+                            <div className="row">
+                                <div className="col-12">
+                                    <Controlpanel />
+                                </div>
+                            </div>
+                        </div>
                     } />
                 </Routes>
             </div>

@@ -5,7 +5,20 @@ function App() {
   const [scoreboardData, setScoreboardData] = useState({
     scoreboardEntriesWithAchievements: [],
   });
+  const colors = ['#FF0000', '#00FF00', '#0000FF', '#00FFFF', '#FF00FF', '#C0C0C0', '#808080', '#800000'];
 
+  const [eventDispatched, setEventDispatched] = useState(false);
+  const [playerColors, setPlayerColors] = useState({});
+
+  const assignPlayerColors = (players) => {
+    let newPlayerColors = { ...playerColors };
+    players.forEach((player, index) => {
+      if (!newPlayerColors[player.playerId]) {
+        newPlayerColors[player.playerId] = colors[index % colors.length];
+      }
+    });
+    setPlayerColors(newPlayerColors);
+  };
   const fetchAchievementsData = async () => {
     try {
       const response = await fetch('http://localhost:8089/scoreboard-with-achievements');
@@ -21,7 +34,7 @@ function App() {
   useEffect(() => {
     fetchAchievementsData();
     const intervalId = setInterval(fetchAchievementsData, 7000);
-    
+
     return () => {
       clearInterval(intervalId);
     };
@@ -30,10 +43,17 @@ function App() {
   useEffect(() => {
     if (scoreboardData && scoreboardData.scoreboardEntriesWithAchievements.length > 0) {
       const playingPlayers = extractPlayingPlayers(scoreboardData);
-      dispatchPlayingPlayersEvent(playingPlayers);
+      assignPlayerColors(playingPlayers);
     }
   }, [scoreboardData]);
 
+  useEffect(() => {
+    if (Object.keys(playerColors).length > 0 && !eventDispatched) {
+      const playingPlayers = extractPlayingPlayers(scoreboardData);
+      dispatchPlayingPlayersEvent(playingPlayers);
+      setEventDispatched(true);
+    }
+  }, [playerColors, eventDispatched]);
 
   const extractPlayingPlayers = (data) => {
     const playerIds = data ? data.scoreboardEntriesWithAchievements.map(entry => entry.player.id) : [];
@@ -46,12 +66,15 @@ function App() {
   };
 
   const dispatchPlayingPlayersEvent = (playingPlayers) => {
+    const playersWithColors = playingPlayers.map(player => ({
+      ...player,
+      color: playerColors[player.playerId]
+    }));
     const event = new CustomEvent('playingPlayersUpdate', {
-      detail: { playingPlayers }
+      detail: { playingPlayers: playersWithColors }
     });
     window.dispatchEvent(event);
   };
-
 
   return (
     <div className="container mt-5">
@@ -104,12 +127,16 @@ function App() {
                   <tr key={`achievements-${index}`}>
                     <td>{entry.player.name}</td>
                     <td>
-                      {entry.achievements.map((ach, idx) => (
-                        <div key={idx} className="d-inline-block me-2">
-                          <img src={ach.achievement.image} alt={ach.achievement.name} style={{ maxWidth: "50px", maxHeight: "50px" }} />
-                          <p className="text-center">{ach.achievement.name}</p>
-                        </div>
-                      ))}
+                      {
+                        entry.achievements
+                          .filter(ach => ach.gameId === scoreboardData.gameId)
+                          .map((ach, idx) => (
+                            <div key={idx} className="d-inline-block me-2">
+                              <img src={ach.achievement.image} alt={ach.achievement.name} style={{ maxWidth: "50px", maxHeight: "50px" }} />
+                              <p className="text-center">{ach.achievement.name}</p>
+                            </div>
+                          ))
+                      }
                     </td>
                   </tr>
                 ))}

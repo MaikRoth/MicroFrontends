@@ -19,6 +19,7 @@ const App = () => {
       });
       const data = await response.json();
       setGameId(data.gameId);
+      triggerGameCardUpdate();
     } catch (error) {
       console.error('Error creating game:', error);
       alert('Failed to create game. ');
@@ -34,6 +35,7 @@ const App = () => {
         },
         body: JSON.stringify({ maxRounds: newMaxRounds }),
       });
+      triggerGameCardUpdate();
     } catch (error) {
       console.error('Error updating max rounds:', error);
       alert('Failed to update max rounds.');
@@ -49,6 +51,7 @@ const App = () => {
         },
         body: JSON.stringify({ duration: newDuration }),
       });
+      triggerGameCardUpdate();
     } catch (error) {
       console.error('Error updating duration:', error);
       alert('Failed to update duration.');
@@ -60,6 +63,7 @@ const App = () => {
       await fetch(`http://localhost:8080/games/${gameId}/gameCommands/start`, {
         method: 'POST',
       });
+      triggerGameCardUpdate();
     } catch (error) {
       console.error('Error starting game:', error);
       alert('Failed to start game.');
@@ -72,6 +76,7 @@ const App = () => {
         method: 'POST',
       });
       setGameId('');
+      triggerGameCardUpdate();
     } catch (error) {
       console.error('Error ending game:', error);
       alert('Failed to end game.');
@@ -85,10 +90,15 @@ const App = () => {
       if (data) {
         setGameId(data[0].gameId);
       }
+      triggerGameCardUpdate();
     } catch (error) {
       console.error('Error fetching game ID:', error);
       alert('Failed to fetch game ID.');
     }
+  };
+
+  const triggerGameCardUpdate = () => {
+    window.dispatchEvent(new Event('updateGameCard'));
   };
 
   return (

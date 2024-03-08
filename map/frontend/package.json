@@ -19,6 +19,7 @@
     "kafkajs": "^2.2.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "robot-image-for-dashboard": "^1.0.1",
     "vue": "^3.4.19",
     "webpack": "^5.90.0"
   },

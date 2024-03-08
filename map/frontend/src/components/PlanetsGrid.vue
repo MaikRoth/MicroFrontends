@@ -13,9 +13,9 @@
             <div class="resource-amount">{{ formatResourceAmount(cell.resource.currentAmount) }}</div>
           </div>
           <div v-if="cell && cell.robots.length > 0" class="robots">
-            <span v-if="cell.robots.length > 4" key="robots-count">{{ cell.robots.length }}</span>
-            <img v-else v-for="robot in cell.robots" :key="`${robot.id}`" :src="`https://robohash.org/${robot.image}.png`"
-              alt="robot" class="robot-image" />
+            <span v-if="cell.robots.length > 4" key="robots-count" class="robot-count" :style="{background: getGradient(cell.robots)}">{{ cell.robots.length }}</span>            
+          <img v-else v-for="robot in cell.robots" :key="`${robot.id}`" :src="`${robot.image}`" alt="robot" class="robot-image" :style="{ borderColor: robot.color }" />
+
           </div>
         </div>
       </div>
@@ -29,18 +29,18 @@ export default {
   props: ['planets'],
   computed: {
     gridSize() {
-    let maxSize = 0;
-    if (this.planets && this.planets.length > 0) {
-      const maxCoordinates = this.planets.reduce((acc, planet) => {
-        return {
-          x: Math.max(acc.x, planet.x),
-          y: Math.max(acc.y, planet.y),
-        };
-      }, { x: 0, y: 0 });
-      maxSize = Math.max(maxCoordinates.x, maxCoordinates.y) + 1;
-    }
-    return maxSize;
-  },
+      let maxSize = 0;
+      if (this.planets && this.planets.length > 0) {
+        const maxCoordinates = this.planets.reduce((acc, planet) => {
+          return {
+            x: Math.max(acc.x, planet.x),
+            y: Math.max(acc.y, planet.y),
+          };
+        }, { x: 0, y: 0 });
+        maxSize = Math.max(maxCoordinates.x, maxCoordinates.y) + 1;
+      }
+      return maxSize;
+    },
     grid() {
       const grid = Array.from({ length: this.gridSize }, () => Array(this.gridSize).fill(null));
       this.planets.forEach(planet => {
@@ -71,7 +71,11 @@ export default {
         return `${thousands}.${hundred}k`;
       }
       return amount.toString();
-    }
+    },
+    getGradient(robots) {
+      const colors = robots.map(robot => robot.color).join(', ');
+      return `linear-gradient(to right, ${colors})`;
+    },
   }
 };
 </script>
@@ -79,15 +83,24 @@ export default {
 <style scoped>
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(85px,0 ));
   gap: 0px;
-  padding: 10px;
 }
-
+.robot-count {
+  display: inline-block;
+  padding: 5px 10px;
+  color: black;
+  border-radius: 5px;
+  margin-top: -20px;
+  margin-left: -20px;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+}
 .robot-image {
-  width: 20px;
-  height: 20px;
-  margin: 2px;
+  width: 25px;
+  height: 25px;
+  border: 3px solid; 
+  display: block;
+  border-radius: 50%;
 }
 
 .robots {
