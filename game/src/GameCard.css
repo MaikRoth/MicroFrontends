@@ -6,7 +6,20 @@
     max-width: 600px;
     background-color: #f9f9f9;
   }
+  .flex-container {
+    display: flex;
+    align-items: center; 
+    justify-content: space-between;
+  }
   
+  .flex-container strong {
+    margin-right: 10px;
+  }
+  
+  .form-control {
+    margin-right: 10px; 
+    max-width: 150px;
+  }
   .game-card h2 {
     color: #007bff;
   }
@@ -22,6 +35,7 @@
   
   .loading {
     text-align: center;
+    justify-content: center;
     margin-top: 20px;
   }
   
