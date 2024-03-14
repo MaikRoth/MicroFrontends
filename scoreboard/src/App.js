@@ -33,13 +33,18 @@ function App() {
   };
   useEffect(() => {
     fetchAchievementsData();
-    const intervalId = setInterval(fetchAchievementsData, 7000);
+  }, []);
+  useEffect(() => {
+    const handleMapUpdated = () => {
+      fetchAchievementsData();
+    };
+
+    window.addEventListener('mapUpdated', handleMapUpdated);
 
     return () => {
-      clearInterval(intervalId);
+      window.removeEventListener('mapUpdated', handleMapUpdated);
     };
   }, []);
-
   useEffect(() => {
     if (scoreboardData && scoreboardData.scoreboardEntriesWithAchievements.length > 0) {
       const playingPlayers = extractPlayingPlayers(scoreboardData);

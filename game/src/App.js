@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+
 import './GameCard.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -9,6 +10,8 @@ const App = () => {
   const [gameId, setGameId] = useState('');
   const [game, setGame] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+
+
 
   const fetchData = async () => {
     try {
@@ -23,12 +26,10 @@ const App = () => {
       setIsLoading(false);
     }
   };
-
   useEffect(() => {
     fetchData();
     handleGetGameId();
   }, []);
-
 
   const handleCreateGame = async (maxRounds, maxPlayers) => {
     try {
@@ -46,7 +47,7 @@ const App = () => {
       console.error('Error creating game:', error);
     }
   };
-
+  
   const handlePatchMaxRounds = async (newMaxRounds) => {
     handleGetGameId();
     try {
@@ -113,6 +114,7 @@ const App = () => {
       console.error('Error getting game ID:', error);
     }
   };
+  
 
   const triggerGameCardUpdate = () => {
     fetchData();

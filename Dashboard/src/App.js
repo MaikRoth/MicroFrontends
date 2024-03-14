@@ -1,11 +1,13 @@
 import React from 'react';
 import Header from './components/Header';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 import GameCard from './components/GameCard';
 import Scoreboard from './components/Scoreboard';
 import Map from './components/Map';
 import Robot from './components/Robot';
-import 'bootstrap/dist/css/bootstrap.min.css';
+
 
 export default () => {
     return (

@@ -17,7 +17,7 @@ const devConfig = {
     },
     plugins: [
         new ModuleFederationPlugin({
-            name: 'container',
+            name: 'dashboard',
             remotes: {
                 gamecard: 'gamecard@http://localhost:4001/remoteEntry.js',
                 map: 'map@http://localhost:4003/remoteEntry.js',
