@@ -18,48 +18,52 @@ function App() {
   };
 
   useEffect(() => {
-    const fetchRobots = async () => {
-      if (playingPlayers.length > 0) {
-        try {
-          const response = await fetch('http://localhost:4006/get-robots', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(playingPlayers),
-          });
-          const robotsData = await response.json();
-          const mapData = Object.values(robotsData).flatMap(({ playerName, robots }) =>
-            robots.map(robot => ({
-              id: robot.id,
-              player: playerName,
-              planet: robot.planet,
-              image: `https://robohash.org/${robot.id}.png`,
-              color: playingPlayers.find(player => player.playerName === playerName).color,
-            }))
-          );
-          const robotMapUpdate = new CustomEvent('robotMapUpdate', {
-            detail: { mapData },
-          });
-          window.dispatchEvent(robotMapUpdate);
-          const newPlayerRobots = {};
-          robotsData.forEach(({ playerName, robots }) => {
-            newPlayerRobots[playerName] = robots;
-          });
-          setPlayerRobots(newPlayerRobots);
-        } catch (error) {
-          console.error('Error fetching robots data:', error);
-        }
+    const fetchRobotsForPlayer = async (player) => {
+      try {
+        const response = await fetch(`http://localhost:8082/robots?player-id=${player.playerId}`);
+        const robots = await response.json();
+        console.log('robots', robots);
+        return {
+          playerName: player.playerName,
+          robots: robots.map(robot => ({
+            ...robot,
+            image: `https://robohash.org/${robot.id}.png`,
+            color: player.color,
+          })),
+        };
+      } catch (error) {
+        console.error('Error fetching robots data:', error);
+        return { playerName: player.playerName, robots: [] };
       }
     };
 
-    const interval = setInterval(() => {
+    const fetchRobots = async () => {
+      const robotsData = await Promise.all(playingPlayers.map(fetchRobotsForPlayer));
+      const newPlayerRobots = robotsData.reduce((acc, { playerName, robots }) => {
+        acc[playerName] = robots;
+        return acc;
+      }, {});
+      setPlayerRobots(newPlayerRobots);
+      const mapData = robotsData.flatMap(({ robots }) =>
+      robots.map(robot => ({
+        id: robot.id,
+        player: robot.playerName,
+        planet: robot.planet,
+        image: robot.image,
+        color: robot.color,
+      }))
+    );
+
+    const robotMapUpdateEvent = new CustomEvent('robotMapUpdate', { detail: { mapData } });
+    window.dispatchEvent(robotMapUpdateEvent);
+    };
+
+    if (playingPlayers.length > 0) {
       fetchRobots();
-    }, 5000);
-
-    return () => clearInterval(interval);
+      const interval = setInterval(fetchRobots, 5000);
+      return () => clearInterval(interval);
+    }
   }, [playingPlayers]);
-
 
   useEffect(() => {
     const handlePlayingPlayersUpdate = (event) => {
@@ -72,7 +76,6 @@ function App() {
       window.removeEventListener('playingPlayersUpdate', handlePlayingPlayersUpdate);
     };
   }, []);
-
 
   return (
     <div className="container">

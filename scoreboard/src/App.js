@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
-  const [scoreboardData, setScoreboardData] = useState({
-    scoreboardEntriesWithAchievements: [],
-  });
+  const [scoreboardData, setScoreboardData] = useState(
+    { scoreboardEntriesWithAchievements: [] }
+  );
   const colors = ['#FF0000', '#00FF00', '#0000FF', '#00FFFF', '#FF00FF', '#C0C0C0', '#808080', '#800000'];
 
   const [eventDispatched, setEventDispatched] = useState(false);
