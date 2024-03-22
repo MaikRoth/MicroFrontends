@@ -18,11 +18,19 @@ export default {
         const event = new CustomEvent('mapUpdated', {});
         const fetchData = async () => {
             try {
-                const response = await fetch('http://localhost:4002/map');
+                const response = await fetch('http://localhost:8081/gameworlds/');
                 if (response.ok) {
                     const data = await response.json();
-                    const allPlanets = data[0].planetsMap;
-                    planets.value = Object.values(allPlanets);
+                    const planetsMap = data[0].mapGrid.planets;
+                    const allPlanets = Object.entries(planetsMap).map(([key, planet]) => {
+                        const matches = key.match(/\(x=(\d+), y=(\d+)\)/);
+                        return {
+                            ...planet,
+                            x: parseInt(matches[1], 10),
+                            y: parseInt(matches[2], 10),
+                        };
+                    });
+                    planets.value = allPlanets;
                     window.dispatchEvent(event);
                     console.log('Received Map Data:', allPlanets);
                 } else {
@@ -41,6 +49,9 @@ export default {
                 robotMap.mapData.forEach(robot => {
                     const planet = planets.value.find(p => p.id === robot.planet);
                     if (planet) {
+                        if (!Array.isArray(planet.robots)) {
+                            planet.robots = [];
+                        }
                         const existingRobotIndex = planet.robots.findIndex(r => r.id === robot.id);
                         if (existingRobotIndex === -1) {
                             planet.robots.push(robot);
@@ -61,5 +72,4 @@ export default {
         return { planets };
     }
 };
-
 </script>

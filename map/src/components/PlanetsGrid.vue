@@ -9,10 +9,10 @@
       <div v-for="(row, y) in grid" :key="y" class="row">
         <div v-for="(cell, x) in row" :key="x" :class="`cell ${cell ? 'planet' : 'empty'}`">
           <div v-if="cell && cell.resource">
-            <div class="resource-type">[{{ cell.resource.resourceType || '' }}]</div>
+            <div class="resource-type">[{{ cell.resource.type || '' }}]</div>
             <div class="resource-amount">{{ formatResourceAmount(cell.resource.currentAmount) }}</div>
           </div>
-          <div v-if="cell && cell.robots.length > 0" class="robots">
+          <div v-if="cell && cell.robots && cell.robots.length > 0" class="robots">
             <span v-if="cell.robots.length > 4" key="robots-count" class="robot-count" :style="{background: getGradient(cell.robots)}">{{ cell.robots.length }}</span>            
           <img v-else v-for="robot in cell.robots" :key="`${robot.id}`" :src="`${robot.image}`" alt="robot" class="robot-image" :style="{ borderColor: robot.color }" />
 
